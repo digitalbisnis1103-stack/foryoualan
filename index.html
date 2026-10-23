@@ -1,0 +1,944 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ed1c24">
+<title>foryoualan</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;600;700&display=swap');
+
+:root {
+  --red: #ed1c24;
+  --red-dark: #b90016;
+  --red-light: #ff555b;
+  --black: #171717;
+  --black-deep: #080808;
+  --white: #ffffff;
+  --pale: #fff0f0;
+  --soft: #ffd6d9;
+  --text: #40151b;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  padding: 14px;
+  display: grid;
+  place-items: center;
+  overflow-x: hidden;
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 15%, #ffffff 0 3px, transparent 4px),
+    radial-gradient(circle at 90% 80%, #ffb5b8 0 4px, transparent 5px),
+    linear-gradient(145deg, #fff0f0, #ffc5c8, #ffe5e5);
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.app {
+  width: 100%;
+  max-width: 390px;
+  min-height: 600px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 5px solid white;
+  border-radius: 30px;
+  background: #fffdfd;
+  box-shadow: 0 25px 70px #b3002040;
+}
+
+.app::before,
+.app::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 125px;
+  height: 125px;
+  border-radius: 50%;
+  background: #ffe5e5;
+}
+
+.app::before {
+  top: 100px;
+  left: -75px;
+}
+
+.app::after {
+  right: -75px;
+  bottom: 70px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 19px 13px;
+}
+
+.brand {
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.counter {
+  padding: 6px 12px;
+  background: var(--pale);
+  border: 1px solid #ffb6b9;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--red-dark);
+}
+
+.progress {
+  height: 5px;
+  margin: 0 19px;
+  background: #ffe0e1;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 33.33%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff646a, #c90016);
+  transition: width .5s ease;
+}
+
+.page {
+  display: none;
+  min-height: 510px;
+  padding: 25px 20px 28px;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.page.active {
+  display: flex;
+  animation: pageEnter .45s ease both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tag {
+  padding: 7px 13px;
+  border-radius: 30px;
+  background: #fff0f0;
+  border: 1px dashed #ffb6b9;
+  color: #c90016;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.sticker-wrap {
+  width: 150px;
+  height: 150px;
+  margin: 20px auto 15px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  border-radius: 45%;
+  background: linear-gradient(145deg, #fff0f0, #ffd6d9);
+  border: 2px dashed var(--red);
+  box-shadow: 0 8px 0 #ffdfe0;
+  animation: stickerFloat 3s ease-in-out infinite;
+}
+
+.sticker-wrap::before {
+  content: "✦";
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  color: var(--red);
+  font-size: 24px;
+}
+
+.sticker-wrap::after {
+  content: "✧";
+  position: absolute;
+  bottom: 8px;
+  left: 7px;
+  color: var(--red);
+  font-size: 22px;
+}
+
+@keyframes stickerFloat {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-7px) rotate(2deg); }
+}
+
+.sticker {
+  width: 84%;
+  height: 84%;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+}
+
+h1 {
+  font-size: clamp(27px, 8vw, 34px);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -.7px;
+  margin: 15px 0 12px;
+}
+
+h1 span {
+  color: var(--red);
+}
+
+.description {
+  max-width: 285px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  line-height: 1.9;
+  color: #90656a;
+}
+
+.primary,
+.secondary {
+  width: 100%;
+  max-width: 275px;
+  min-height: 49px;
+  padding: 13px 18px;
+  margin-top: 20px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 900;
+  transition: transform .15s, box-shadow .15s;
+}
+
+.primary {
+  color: white;
+  background: linear-gradient(135deg, #ff4148, #c90016);
+  box-shadow: 0 6px 0 #85000d, 0 10px 20px #ed1c2433;
+}
+
+.primary:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #85000d;
+}
+
+.secondary {
+  margin-top: 12px;
+  background: white;
+  border: 1px solid #ffc4c7;
+  color: #c90016;
+}
+
+.secondary:active {
+  transform: scale(.98);
+}
+
+.note {
+  font-size: 10px;
+  color: #aa7278;
+  margin-top: 18px;
+  letter-spacing: .5px;
+}
+
+/* PAGE 2 - AMPlOP */
+
+.envelope-area {
+  width: 100%;
+  height: 230px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0 0;
+  perspective: 1000px;
+}
+
+.envelope {
+  width: min(250px, 85%);
+  height: 155px;
+  position: relative;
+  cursor: pointer;
+  filter: drop-shadow(0 12px 12px #d98b9544);
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.env-back {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #ffd7d9;
+  border: 1px solid #f8a0a6;
+  border-radius: 10px;
+}
+
+.letter {
+  position: absolute;
+  z-index: 1;
+  left: 12px;
+  right: 12px;
+  bottom: 5px;
+  height: 132px;
+  padding: 12px 8px;
+  background: #fffdfd;
+  border: 1px solid #ffd6d8;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition:
+    transform .75s cubic-bezier(.2,.8,.2,1),
+    bottom .75s cubic-bezier(.2,.8,.2,1);
+}
+
+.letter img {
+  display: block;
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+}
+
+.letter p {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--red-dark);
+}
+
+/* DEPAN AMPLOP */
+.env-front {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 10px;
+  background: var(--red);
+  clip-path: polygon(
+    0 0,
+    50% 54%,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* LIPATAN ATAS */
+.env-flap {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: 10px;
+  background: #ff555b;
+  clip-path: polygon(0 0, 100% 0, 50% 57%);
+  transform-origin: 50% 0%;
+  transition: transform .55s ease, z-index 0s .28s;
+  backface-visibility: hidden;
+}
+
+/* SEGEL HITAM */
+.seal {
+  position: absolute;
+  z-index: 5;
+  top: 54%;
+  left: 50%;
+  width: 39px;
+  height: 39px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid white;
+  background: var(--black);
+  color: white;
+  font-size: 17px;
+  box-shadow: 0 3px 8px #00000030;
+  transition: opacity .25s, transform .25s;
+}
+
+.envelope.open .env-flap {
+  transform: rotateX(180deg);
+  z-index: 1;
+}
+
+.envelope.open .letter {
+  bottom: 55px;
+  transform: translateY(-22px);
+}
+
+.envelope.open .seal {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.5);
+}
+
+.envelope:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 7px;
+}
+
+.tap-hint {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #aa7278;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* PAGE 3 - PESAN RAHASIA */
+
+.message-card {
+  width: 100%;
+  margin-top: 14px;
+  padding: 20px 16px;
+  position: relative;
+  background: linear-gradient(150deg, #fff5f5, #ffe1e2);
+  border: 1px solid #ffc3c6;
+  border-radius: 23px;
+  box-shadow: 0 7px 0 #ffe6e7;
+}
+
+.message-card::before,
+.message-card::after {
+  content: "✧";
+  position: absolute;
+  color: var(--red);
+  font-size: 22px;
+}
+
+.message-card::before {
+  top: 8px;
+  left: 12px;
+}
+
+.message-card::after {
+  right: 12px;
+  bottom: 8px;
+}
+
+.final-sticker {
+  width: 105px;
+  height: 105px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+.message-card h2 {
+  font-size: 23px;
+  margin-bottom: 11px;
+}
+
+.message-card p {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px;
+  line-height: 1.9;
+  color: #92677b;
+}
+
+.surprise-message {
+  padding: 14px;
+  margin-top: 13px;
+  border-radius: 15px;
+  border: 1px dashed var(--red);
+  background: white;
+  font-size: 12px;
+  line-height: 1.9;
+  animation: pageEnter .4s ease;
+}
+
+.gift-sticker {
+  width: 85px;
+  height: 85px;
+  object-fit: contain;
+}
+
+.footer {
+  text-align: center;
+  padding: 0 12px 16px;
+  font-size: 10px;
+  letter-spacing: .6px;
+  color: #aa7278;
+}
+
+/* HATI MELAYANG */
+.float-heart {
+  position: fixed;
+  z-index: 10;
+  bottom: -40px;
+  pointer-events: none;
+  animation: floatUp 4s linear forwards;
+}
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(0) rotate(0); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-105vh) rotate(40deg); }
+}
+
+@media (max-width: 420px) {
+  body { padding: 9px; }
+  .app { max-width: 365px; }
+  .page { min-height: 505px; padding: 24px 18px; }
+}
+
+@media (max-height: 720px) {
+  body { align-items: start; }
+  .app { margin: 6px auto; }
+  .page { min-height: 475px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+    <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
+
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+<main class="app">
+  <header class="topbar">
+    <div class="brand">♡ A LITTLE SURPRISE</div>
+    <div class="counter" id="counter">01 / 03</div>
+  </header>
+
+  <div class="progress">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- PAGE 1 -->
+  <section class="page active" id="page1">
+    <div class="tag">a tiny surprise for you</div>
+
+    <div class="sticker-wrap">
+      <img class="sticker"
+           src="icon1.webp"
+           alt="Stiker pembuka">
+    </div>
+
+    <h1>Hei, <span>Sayang!</span><br>Ada sesuatu buat kamu nih ♡</h1>
+
+    <button class="primary" onclick="startSurprise()">
+       Open my surprise →
+    </button>
+
+    <p class="note">♡ made with love, just for you ♡</p>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="page" id="page2">
+    <div class="tag">sealed with love</div>
+
+    <h1>You've got <span>mail!</span></h1>
+
+    <p class="description">
+      ada pesan rahasia di dalam amplop ini.
+      tap bagian tengahnya untuk membuka suratmu.
+    </p>
+
+    <div class="envelope-area">
+      <div class="envelope"
+           id="envelope"
+           role="button"
+           tabindex="0"
+           aria-label="Buka amplop"
+           onclick="openEnvelope()"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openEnvelope()}">
+
+        <div class="env-back"></div>
+
+        <div class="letter">
+          <img src="icon2.webp"
+               alt="Stiker surat">
+          <p>A LITTLE NOTE FOR YOU ♡</p>
+        </div>
+
+        <div class="env-front"></div>
+        <div class="env-flap"></div>
+        <div class="seal">♥</div>
+      </div>
+    </div>
+
+    <p class="tap-hint" id="tapHint">✧ tap the envelope ✧</p>
+
+    <button class="primary hidden"
+            id="continueButton"
+            onclick="goToPage(3)">
+      Read my message ♡
+    </button>
+
+    <button class="secondary" onclick="goToPage(1)">
+      ← Back
+    </button>
+  </section>
+
+  <!-- PAGE 3 -->
+  <section class="page" id="page3">
+    <div class="tag">a message for you</div>
+
+    <h1>HAPPY <span>MENSIVE!!!</span></h1>
+
+    <div class="message-card">
+      <img class="final-sticker"
+           src="icon3.webp"
+           alt="Stiker pesan">
+
+      <h2>sayangg ♡</h2>
+
+      <p>
+        makasih ya udah jadi bagian dari dunia ini.
+        semoga kamu selalu punya alasan buat tersenyum,
+        bahkan saat hari-harimu terasa berat.
+        <br><br>
+        jangan lupa istirahat, jangan terlalu keras
+        sama diri sendiri, dan jangan lupa kalau kamu
+        juga pantas mendapatkan hal-hal baik.
+        <br><br>
+        I hope life is gentle with you. ♡
+      </p>
+
+      <div class="surprise-message hidden" id="surpriseMessage">
+        <img class="gift-sticker"
+             src="icon4.webp"
+             alt="Stiker hadiah">
+
+        <br>
+
+        <br>
+        semoga ada lebih banyak tawa,
+        kabar baik, pelukan hangat,
+        dan alasan kecil untuk bahagia
+        yang datang ke hidupmu.
+        <br><br>
+        sending you the biggest virtual hug! ♡
+      </div>
+    </div>
+
+    <button class="primary"
+            id="surpriseButton"
+            onclick="revealSurprise()">
+      Open the final gift 
+    </button>
+
+    <button class="secondary" onclick="goToPage(1)">
+      ↻ Start again
+    </button>
+  </section>
+
+</main>
+
+<script>
+const counter = document.getElementById("counter");
+const progressFill = document.getElementById("progressFill");
+const envelope = document.getElementById("envelope");
+const continueButton = document.getElementById("continueButton");
+const tapHint = document.getElementById("tapHint");
+const surpriseMessage = document.getElementById("surpriseMessage");
+const surpriseButton = document.getElementById("surpriseButton");
+
+let envelopeOpened = false;
+let surpriseShown = false;
+
+/* NAVIGASI 3 HALAMAN */
+function goToPage(number) {
+  if (number < 1 || number > 3) return;
+
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
+
+  document.getElementById("page" + number).classList.add("active");
+  counter.textContent = `0${number} / 03`;
+  progressFill.style.width = `${number / 3 * 100}%`;
+
+  if (number === 3) makeHearts(8);
+}
+
+/* BUKA AMPLOP */
+function openEnvelope() {
+  if (envelopeOpened) return;
+
+  envelopeOpened = true;
+  envelope.classList.add("open");
+  tapHint.textContent = "♡ suratnya terbuka untuk kamu ♡";
+
+  setTimeout(() => {
+    continueButton.classList.remove("hidden");
+    makeHearts(12);
+  }, 850);
+}
+
+/* KEJUTAN TERAKHIR */
+function revealSurprise() {
+  if (surpriseShown) return;
+
+  surpriseShown = true;
+  surpriseMessage.classList.remove("hidden");
+  surpriseButton.textContent = "Sending you lots of love ♡";
+
+  makeHearts(24);
+
+  launchConfetti(
+    260,
+    window.innerWidth / 2,
+    window.innerHeight * 0.43
+  );
+
+  setTimeout(() => {
+    launchConfetti(
+      100,
+      window.innerWidth * 0.12,
+      window.innerHeight * 0.4
+    );
+
+    launchConfetti(
+      100,
+      window.innerWidth * 0.88,
+      window.innerHeight * 0.4
+    );
+  }, 250);
+
+  setTimeout(() => {
+    launchConfetti(
+      120,
+      window.innerWidth / 2,
+      window.innerHeight * 0.2
+    );
+  }, 650);
+}
+
+/* HATI MELAYANG */
+function makeHearts(amount = 10) {
+  const symbols = ["♥", "♡", "✦", "✧"];
+
+  for (let i = 0; i < amount; i++) {
+    setTimeout(() => {
+      const item = document.createElement("div");
+      item.className = "float-heart";
+      item.textContent =
+        symbols[Math.floor(Math.random() * symbols.length)];
+
+      item.style.color = [
+        "#ed1c24", "#ff555b", "#171717", "#c90016"
+      ][Math.floor(Math.random() * 4)];
+
+      item.style.left = Math.random() * 95 + "vw";
+      item.style.fontSize = 14 + Math.random() * 23 + "px";
+      item.style.animationDuration = 2.5 + Math.random() * 2 + "s";
+
+      document.body.appendChild(item);
+      setTimeout(() => item.remove(), 5000);
+    }, i * 75);
+  }
+}
+
+/* CONFETTI MERIAH */
+const canvas = document.getElementById("confettiCanvas");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+let animationRunning = false;
+let lastFrame = 0;
+
+const palette = [
+  "#ed1c24",
+  "#c90016",
+  "#171717",
+  "#ffffff",
+  "#ff555b",
+  "#8b0000",
+  "#d9d9d9"
+];
+
+function resizeCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  canvas.style.width = window.innerWidth + "px";
+  canvas.style.height = window.innerHeight + "px";
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+function launchConfetti(amount, originX, originY) {
+  const total = window.innerWidth < 600
+    ? Math.ceil(amount * 0.7)
+    : amount;
+
+  for (let i = 0; i < total; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 4 + Math.random() * 12;
+    const roll = Math.random();
+
+    particles.push({
+      x: originX + (Math.random() - 0.5) * 35,
+      y: originY + (Math.random() - 0.5) * 25,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 3,
+      gravity: 0.12 + Math.random() * 0.13,
+      drag: 0.987 + Math.random() * 0.009,
+      size: 4 + Math.random() * 7,
+      width: 4 + Math.random() * 7,
+      height: 6 + Math.random() * 11,
+      rotation: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.25,
+      color: palette[Math.floor(Math.random() * palette.length)],
+      shape: roll < 0.22
+        ? "heart"
+        : roll < 0.45 ? "circle" : "rect",
+      life: 180 + Math.random() * 100,
+      alpha: 1
+    });
+  }
+
+  if (particles.length > 1000) {
+    particles.splice(0, particles.length - 1000);
+  }
+
+  if (!animationRunning) {
+    animationRunning = true;
+    lastFrame = 0;
+    requestAnimationFrame(animateConfetti);
+  }
+}
+
+function drawHeart(size) {
+  ctx.beginPath();
+  ctx.moveTo(0, size * 0.3);
+
+  ctx.bezierCurveTo(
+    -size, -size * 0.35,
+    -size * 0.65, -size,
+    0, -size * 0.45
+  );
+
+  ctx.bezierCurveTo(
+    size * 0.65, -size,
+    size, -size * 0.35,
+    0, size * 0.3
+  );
+
+  ctx.fill();
+}
+
+function animateConfetti(timestamp) {
+  if (timestamp - lastFrame < 16) {
+    requestAnimationFrame(animateConfetti);
+    return;
+  }
+
+  lastFrame = timestamp;
+  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+
+    p.vx *= p.drag;
+    p.vy = p.vy * p.drag + p.gravity;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.rotation += p.spin;
+    p.life--;
+
+    if (p.life < 35) {
+      p.alpha = Math.max(0, p.life / 35);
+    }
+
+    ctx.save();
+    ctx.globalAlpha = p.alpha;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation);
+    ctx.fillStyle = p.color;
+
+    if (p.shape === "circle") {
+      ctx.beginPath();
+      ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (p.shape === "heart") {
+      drawHeart(p.size);
+    } else {
+      ctx.fillRect(
+        -p.width / 2,
+        -p.height / 2,
+        p.width,
+        p.height
+      );
+    }
+
+    ctx.restore();
+
+    if (p.life <= 0 || p.y > window.innerHeight + 50) {
+      particles.splice(i, 1);
+    }
+  }
+
+  if (particles.length > 0) {
+    requestAnimationFrame(animateConfetti);
+  } else {
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    animationRunning = false;
+  }
+}
+
+function startSurprise() {
+  const music = document.getElementById("bgMusic");
+  music.volume = 0.5;
+
+  music.play().catch(() => {
+    console.log("Musik menunggu interaksi pengguna.");
+  });
+
+  goToPage(2);
+}
+</script>
+
+</body>
+</html>
